@@ -9,7 +9,65 @@
     <center>
     <h1>Welcome to Django</h1>
     <hr />
-    <h3><mark>Good Morning  {{myname}}</mark></h3>
+    {% comment %}
+    <p>Logged in at <i>{{curdate}}</i></p>
+
+
+    <h3><mark>Good Morning  {{myname}}
+
+    {% with lastname="Banjan" %}
+      {{lastname}}
+    {% endwith %}
+
+    {% endcomment %}
+
+    <!--  DTL if else  -->
+    <h3><mark>
+     {% if hour >= 1 and hour < 12 %} 
+     Good Morning  {{myname}}
+     {% elif hour >= 12 and hour <= 16  %} 
+     Good Afternoon  {{myname}}
+     {% elif hour >= 16 and hour <= 24  %} 
+     Good Evening  {{myname}}
+     {% endif %}
+
+
+    <!-- Showing Book data -->
+
+    <table border="1" cellspacing="4px" cellpadding="8px">
+        <thead>
+            <th>Sr. no</th>
+            <th>ISBN</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>DOP</th>
+            <th>Description</th>
+            <th>Photo</th>
+        </thead>
+        <tbody>
+            {% for x in allbooks %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{x.isbn}}</td>
+                <td>{{x.title}}</td>
+                <td>{{x.author}}</td>
+                <td>{{x.category}}</td>
+                <td>{{x.price}}</td>
+                <td>{{x.qty}}</td>
+                <td>{{x.dop}}</td>
+                <td>{{x.description}}</td>
+                <td>
+                    <img src="{{x.photo.url}}" alt="{{x.title}}" width="300px" height="200px">
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    </mark></h3>
     </center>
 </body>
 </html>
