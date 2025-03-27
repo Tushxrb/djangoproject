@@ -15,7 +15,7 @@
 
     {% block body %}
     <center>
-    <h1>Welcome to Django</h1>
+    <h1>Welcome to MyBookStore</h1>
     <hr />
     {% comment %}
     <p>Logged in at <i>{{curdate}}</i></p>
@@ -27,7 +27,6 @@
       {{lastname}}
     {% endwith %}
 
-    {% endcomment %}
 
     <!--  DTL if else  -->
     <h3><mark>
@@ -40,9 +39,12 @@
      {% endif %}
 
 
-    <!-- Showing Book data -->
+{% endcomment %}
 
-    <table border="1" cellspacing="4px" cellpadding="8px">
+
+    <!-- Showing Book data -->
+    <h1>Book Details</h1>
+    <table class="table table-bordered table-striped">
         <thead>
             <th>Sr. no</th>
             <th>ISBN</th>
