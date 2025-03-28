@@ -79,6 +79,11 @@ def signin(req):
         
 def dashboard(req):
     print(req.user)
-    return render(req, "dashboard.html")
+    username= req.user
+    return render(req, "dashboard.html", {"username":username})
+
+def userlogout(req):
+    logout(req)
+    return redirect('/')
 
 
