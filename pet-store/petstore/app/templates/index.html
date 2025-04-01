@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block title %}Home{% endblock %}
+</head>
+<body>
+    {% block body %}
+    <center>
+    <h1>Welcome to MyPetStore</h1>
+    <hr />
+
+    <!-- Showing Pets data -->
+    <h1>Pets Details</h1>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <th>Sr. no</th>
+            <th>PetName</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Description</th>
+            <th>Photo</th>
+        </thead>
+        <tbody>
+            {% for x in allpets %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{x.petname}}</td>
+                <td>{{x.age}}</td>
+                <td>{{x.gender}}</td>
+                <td>{{x.description}}</td>
+                <td>
+                    <img src="{{x.photo.url}}" alt="{{x.petname}}" width="100px" height="100px">
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    </mark></h3>
+    </center>
+
+    {% endblock %}
+
+</body>
+</html>
