@@ -79,4 +79,23 @@ def petdetails(req, petid):
     context = {'petdata': petdata}
     return render(req, 'pet-details.html', context)
 
+from .forms import PetForm
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.list import ListView
 
+class PetRegister(CreateView):
+    model = Pet
+    fields = "__all__"
+    success_url = "/dashboard"
+    
+class PetUpdate(UpdateView):
+    model = Pet
+    template_name_suffix = "_update_form"
+    fields = "__all__"
+    success_url = "/dashboard"
+    
+
+class PetDelete(DeleteView):
+    model = Pet
+    success_url = "/dashboard"
+    
