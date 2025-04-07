@@ -5,6 +5,9 @@
     <div class="row">
      <h2><a href="{% url 'PetRegister' %}">Register for new pet</a></h2>
 
+      {% for m in messages %}
+        <h1><mark>{{m}}</mark></h1>
+      {% endfor %}
         {% for x in allpets %}
         <div class="col-md-3">
             <div class="card" style="width: 15rem;">

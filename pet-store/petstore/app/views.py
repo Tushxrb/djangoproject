@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 
 def index(req):
     allpets = Pet.objects.all()
+    # petsdata = Pet.objects.filter(petname = "Chotu")
     return render(req, 'index.html',{"allpets":allpets})
 
 def signup(req):
@@ -98,4 +99,35 @@ class PetUpdate(UpdateView):
 class PetDelete(DeleteView):
     model = Pet
     success_url = "/dashboard"
+
+from django.contrib import messages
+from django.db.models import Q
+
+
+def searchpets(req):
+    query = req.GET["q"]
+    print(query)
+    allpets = Pet.objects.filter(
+        Q(petname__icontains=query) | Q(description__icontains=query) | Q(gender__icontains=query))
+    print(allpets, len(allpets))
+    if len(allpets)==0:
+        messages.error(req, "No results found!")
+        
+    context = {"allpets": allpets}
+    
+    if req.user.is_authenticated:
+        return render(req, "dashboard.html", context)
+    else:
+        return render(req, "index.html", context)
+        
+def searchbygender(req, gender):
+    male = req.GET["male"]
+    female = req.GET["female"]
+    allpets = Pet.objects.filter(gender__exact=male)
+    print(allpets)
+    allpets = Pet.objects.filter(gender__exact=female)
+    print(allpets)
+
+
+    
     

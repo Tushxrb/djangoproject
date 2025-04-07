@@ -14,6 +14,15 @@
     {% block body %}
     <hr />
 
+    <div class="container">
+      <div class="row">
+        <h2>Search By Gender</h2>
+        <a href="/searchbygender" name="male">Male</a>
+        <br>
+        <a href="/searchbygender" name="female">Female</a>
+      </div>
+    </div>
+
     <!-- carousel -->
 
     <div class="container">
@@ -60,6 +69,11 @@
     </div>
 
     <!-- Pet details -->
+
+    {% for m in messages %}
+        <h1><mark>{{m}}</mark></h1>
+    {% endfor %}
+    
     <div class="container mt-5">
         <div class="row">
             {% for x in allpets %}
