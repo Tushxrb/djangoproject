@@ -120,14 +120,24 @@ def searchpets(req):
     else:
         return render(req, "index.html", context)
         
-def searchbygender(req, gender):
-    male = req.GET["male"]
-    female = req.GET["female"]
-    allpets = Pet.objects.filter(gender__exact=male)
+def searchbygender(req):
+    gender = req.GET["gender"]
+    if gender == "male":
+        allpets = Pet.objects.filter(gender__exact="Male")
+    else:
+        allpets = Pet.objects.filter(gender__exact="Female")
     print(allpets)
-    allpets = Pet.objects.filter(gender__exact=female)
-    print(allpets)
+    context={"allpets":allpets}
+    return render(req, "index.html", context)
 
-
+def req_passwoed(req):
+    if req.method=="POST":
+        uemail = req.POST["uemail"]
+        try:
+            user = User.objects.get(email=uemail)
+            return render(req, 'dashboard.html')
+        except User.DoesNotExist:
+            messages.error(req, "No account found with this email id.")
+            return render(req, "index.html")
     
     
