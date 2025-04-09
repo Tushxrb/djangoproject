@@ -13,8 +13,8 @@ def index(req):
 from django.core.exceptions import ValidationError
 
 def validate_password(password):
-    if len(password) < 8 and len(password) > 128:
-        raise ValidationError("Password must be atleast 8 character long amd less than 128")
+    if len(password) < 8 or len(password) > 128:
+        raise ValidationError("Password must be atleast 8 character long and less than 128")
     
     has_upper = False
     has_lower = False
@@ -174,12 +174,27 @@ def searchbygender(req):
     context={"allpets":allpets}
     return render(req, "index.html", context)
 
+from django.core.mail import send_mail
+from django.conf import settings
+import random
+
+
 def req_password(req):
     if req.method=="POST":
         uemail = req.POST["uemail"]
         try:
             user = User.objects.get(email=uemail)
+            userotp = random.randint(111111, 999999)
+            req.session['otp'] = userotp
+            
+            subject = "PetStore - OTP for reset password"
+            msg = f"Hello, {user}\n Your OTP to reset password is: {userotp}\n Thank you for using our services."
+            emailfrom = settings.EMAIL_HOST_USER
+            receiver = [user.email]
+            send_mail(subject, msg, emailfrom, receiver)
+            
             return redirect("reset_password", uemail=user.email)
+        
         except User.DoesNotExist:
             messages.error(req, "No account found with this email id.")
             return render(req, "req_password.html")
@@ -190,16 +205,28 @@ def req_password(req):
 def reset_password(req, uemail):
     user = User.objects.get(email=uemail)
     if req.method == "POST":
+        otp_entered = req.POST["otp"]
         upass = req.POST["upass"]
         ucpass = req.POST["ucpass"]
-        if upass != ucpass:
-            messages.error("Password does not match.")
+        userotp = req.session.get("otp")
+        print(userotp)
+        print(otp_entered, upass, ucpass)
+        if int(otp_entered) != int(userotp):
+            messages.error(req, "OTP does not match. Try again.")
+            return render(req, "reset_password.html", {"uemail": uemail})
+            
+        elif upass != ucpass:
+            messages.error(req, "Password does not match.")
             return render(req, "reset_password.html", {"uemail": uemail})
         else:
-            validate_password(upass)
-            user.set_password(upass)
-            user.save()
-            return redirect('signin')
+            try:
+                validate_password(upass)
+                user.set_password(upass)
+                user.save()
+                return redirect('signin')
+            except ValidationError as e:
+                messages.error(req, str(e))
+                return render(req, "reset_password.html", {"uemail": uemail})
     else:
         return render(req, "reset_password.html", {"uemail": uemail})
     
