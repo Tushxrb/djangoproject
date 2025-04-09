@@ -10,6 +10,41 @@ def index(req):
     # petsdata = Pet.objects.filter(petname = "Chotu")
     return render(req, 'index.html',{"allpets":allpets})
 
+from django.core.exceptions import ValidationError
+
+def validate_password(password):
+    if len(password) < 8 and len(password) > 128:
+        raise ValidationError("Password must be atleast 8 character long amd less than 128")
+    
+    has_upper = False
+    has_lower = False
+    has_digit = False
+    has_special = False
+    specialchars = "@$!%&*?"
+    
+    for char in password:
+        if char.isupper():
+            has_upper = True
+        elif char.islower():
+            has_lower = True
+        elif char.isdigit():
+            has_digit = True
+        elif char in specialchars:
+            has_special = True
+            
+    if not has_upper:
+        raise ValidationError("Password must contain atleast one upper case letter.")
+    if not has_lower:
+        raise ValidationError("Password must contain atleast one lower case letter.")
+    if not has_digit:
+        raise ValidationError("Password must contain atleast one numeric digit.")
+    if not specialchars:
+        raise ValidationError("Password must contain atleast one special character (For eg: @$!%&*?).")
+    
+    commonpassword = ["password", "123456", "qwerty", "abc123"]
+    if password in commonpassword:
+        raise ValidationError("This password is too common. Please choose another one.")
+    
 def signup(req):
     print(req.method)
     if req.method=="GET":
@@ -21,6 +56,15 @@ def signup(req):
         upass=req.POST["upass"]
         ucpass=req.POST["ucpass"]
         print(uname, upass, ucpass,uemail)
+        context={}
+        
+        try:
+            validate_password(upass)
+        except ValidationError as e:
+            context["errmsg"] = str(e)
+            return render(req, 'signup.html', context)
+
+        
         if upass != ucpass:
             errmsg='Password and Confirm password must be same'
             context={'errmsg':errmsg}
@@ -130,14 +174,32 @@ def searchbygender(req):
     context={"allpets":allpets}
     return render(req, "index.html", context)
 
-def req_passwoed(req):
+def req_password(req):
     if req.method=="POST":
         uemail = req.POST["uemail"]
         try:
             user = User.objects.get(email=uemail)
-            return render(req, 'dashboard.html')
+            return redirect("reset_password", uemail=user.email)
         except User.DoesNotExist:
             messages.error(req, "No account found with this email id.")
-            return render(req, "index.html")
+            return render(req, "req_password.html")
+    else:
+        return render(req, "req_password.html")
+        
     
+def reset_password(req, uemail):
+    user = User.objects.get(email=uemail)
+    if req.method == "POST":
+        upass = req.POST["upass"]
+        ucpass = req.POST["ucpass"]
+        if upass != ucpass:
+            messages.error("Password does not match.")
+            return render(req, "reset_password.html", {"uemail": uemail})
+        else:
+            validate_password(upass)
+            user.set_password(upass)
+            user.save()
+            return redirect('signin')
+    else:
+        return render(req, "reset_password.html", {"uemail": uemail})
     
